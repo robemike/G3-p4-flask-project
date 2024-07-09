@@ -6,6 +6,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from datetime import datetime
 db = SQLAlchemy()
 
+# members_events join table.
 members_events = db.Table(
     'members_events',
     db.Column('member_id', db.Integer, db.ForeignKey(
@@ -16,6 +17,7 @@ members_events = db.Table(
         )
 )
 
+# Member model
 class Member(db.Model):
     __tablename__ = "members"
 
@@ -29,6 +31,7 @@ class Member(db.Model):
         'Event', secondary=members_events, back_populates='members'
     )
 
+# Event model
 class Event(db.Model):
     __tablename__ = "events"
 
