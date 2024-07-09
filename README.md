@@ -5,6 +5,24 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## A brief project description to help in development
 A Book club application. Include a Member model to manage the members of a book club application, their information, login details and so on, Book model to manage the books that these Members read, a Book Review model to manage the reviews for each particular book from the Members, Event model to manage the (Book) events that the users/members will be involved in. Finally the join tables to manage the many-to-many relationships in this case (members_books and members_events). There is a one-to-many relationship between the members and the reviews(ratings). One member many reviews for a book.
 
+### Member model Columns
+id, name, email, password
+
+### Book model Columns
+id, title, author, publish-date, description
+
+### Event model Columns
+id, name, date/time, location, description
+
+### Book Rating(Review model)
+id, rating, book_id
+
+### members_books join table
+user_id, book_id
+
+### members_events join table 
+user_id, event_id
+
 ## Available Scripts
 
 In the project directory, you can run:
