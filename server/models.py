@@ -27,9 +27,9 @@ class Member(db.Model):
     password = db.Column(db.String, nullable=False)
 
     # Relationship mapping Member(s) and Event(s)
-    events = db.relationship(
-        'Event', secondary=members_events, back_populates='members'
-    )
+    events = db.relationship('Event', secondary=members_events, back_populates='members')
+    
+    reviews = db.relationship('Review', back_populates="member")
 
 # Event model
 class Event(db.Model):
@@ -44,3 +44,35 @@ class Event(db.Model):
     members = db.relationship(
         'Member', secondary=members_events, back_populates='events'
     )
+
+members_books = db.Table(
+    'members_books',
+    db.Column('member_id', db.Integer, db.ForeignKey(
+        'members.id'), primary_key=True
+        ),
+    db.Column('book_id', db.Integer, db.ForeignKey(
+        'books.id', primary_key=True)
+        )
+)
+
+class Book(db.Model, SerializerMixin):
+    __tablename__ = "books"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String)
+    author = db.Column(db.String)
+    publisher_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    description = db.Column(db.text)
+
+    b_events = db.relationship("review", secondary=members_books, back_populates='books')
+
+class Review(db.Model, SerializerMixin):
+    __tablename__ = "review"
+
+    id = db.Column(db.Integer, primary_key=True)
+    member_id = db.Column('member_id', db.Integer, db.ForeignKey('members.id', primary_key=True) )
+    book_id= db.Column('book_id', db.Integer , db.ForeignKey('books.id', primary_key=True) )
+    rating = db.Column(db.Integer)
+    review = db.Column(db.String)
+
+    member = db.relationship('Member', back_populates="reviews")
