@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
+from flask_jwt_extended import jwt_required, create_access_token, create_refresh_token
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, Member, Book, Review, Event
@@ -125,6 +126,12 @@ class EventResource(Resource):
         session.commit()
         return {'message': 'Event created', 'id': new_event.id}, 201
 
+class Events(Resource):
+
+    def get(self):
+        events = Event.query.all()
+        events_list = [event.to_dict() for event in events]
+        return events_list
 # Endpoints
 api.add_resource(MemberResource, '/members', '/members/<int:member_id>')
 api.add_resource(BookResource, '/books', '/books/<int:book_id>')
