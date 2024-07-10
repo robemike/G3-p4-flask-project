@@ -23,6 +23,14 @@ user_id, book_id
 ### members_events join table 
 user_id, event_id
 
+## React overview (The React components)
+1. MembersList component
+2. MemberDetail component
+3. BookList component
+4. BookDetail Component + reviews on a book
+5. Dashboard Component/ Home component
+6. Authentication Components
+
 ## Available Scripts
 
 In the project directory, you can run:
