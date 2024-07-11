@@ -24,7 +24,8 @@ class Events(Resource):
     def get(self):
         events = [event.to_dict() for event in Event.query.all()]
         return make_response(jsonify(events), 200)
-
+    
+class EventById(Resource):
     def delete(self, id):
         event = Event.query.filter_by(id = id).first()
         if event:
@@ -42,4 +43,5 @@ class Events(Resource):
         db.session.commit()
         return make_response(event.to_dict(), 200)
     
+events_api.add_resource(EventById, '/events/<int:id>')    
 events_api.add_resource(Events, '/events')
