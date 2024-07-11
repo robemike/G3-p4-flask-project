@@ -1,37 +1,62 @@
-from flask import Flask, render_template, request, jsonify
-from flask_login import LoginManager, login_user, current_user, logout_user
-from models import Member
+
+from flask import Flask, request, jsonify
+from flask_restful import Resource, Api
+from flask_migrate import Migrate
+from flask_jwt_extended import jwt_required, create_access_token, create_refresh_token, JWTManager
+from datetime import timedelta
+from models import Member, Book, Review, Event, db
+from flask_cors import CORS
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import JWTManager
+import random
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+CORS(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bookclub.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'your_secret_key'  # Replace with a strong secret key
+app.config['JWT_SECRET_KEY'] = "fsbdgfnhgvjnvhmvh"+str(random.randint(1,1000000000000))
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
+app.config["SECRET_KEY"] = "JKSRVHJVFBSRDFV"+str(random.randint(1,1000000000000))
+app.json.compact = False
 
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
-migrate = Migrate(app=app, db=db)
+migrate = Migrate(app, db)
 db.init_app(app)
+api = Api(app)
 
-# ... other routes and logic (replace with your application logic)
 
-@app.route('/login', methods=['POST'])
-def login():
-    if current_user.is_authenticated:
-        return jsonify({'error': 'Already logged in'})
+class SignUp(Resource):
+    def post(self):
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-    username = request.json.get('username')
-    password = request.json.get('password')
+        existing_member = Member.query.filter_by(email=email).first()
+        if existing_member:
+            return {"message": "Email address already exists."}, 400
+        else:
+            hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+            new_member = Member(username=username, email=email, password=hashed_password)
+            db.session.add(new_member)
+            db.session.commit()
+            return {"message": "Member registered successfully."}
+        
+class Login(Resource):
+    def post(self):
+        email = request.form.get("email", None)
+        password = request.form.get("password", None)
 
-    user = Member.query.filter_by(email=username).first()
-    if user and bcrypt.check_password_hash(user.password, password):
-        # Generate JWT access token
-        access_token = create_access_token(identity=user.id)
-        return jsonify({'success': True, 'access_token': access_token})
-    else:
-        return jsonify({'error': 'Invalid credentials'})
+        member = Member.query.filter(Member.email == email).first()
 
-if __name__ == "__main__":
+        if member and bcrypt.check_password_hash(member.password, password):
+            access_token = create_access_token(identity=member.id)
+            return jsonify({"access_token":access_token})
+        else:
+            return jsonify({"message": "Invalid login credentials."})
+
+api.add_resource(SignUp, '/signup')
+api.add_resource(Login, '/login')
+
+if __name__ == '__main__':
     app.run(port=5555, debug=True)
