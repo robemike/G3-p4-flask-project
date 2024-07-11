@@ -1,23 +1,18 @@
-import logo from './logo.svg';
 import './App.css';
+import Login from './components/Login';
+// import EventsList from './components/EventsList';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="container">
+        <Login />
+      {/* <EventsList src="./assets/01.webp" title="Writing Workshop" />
+      <EventsList src="./assets/02.jpg" title="Spelling Bee" />
+      <EventsList src="./assets/03.jpg" title="Fundraising Activity" />
+      <EventsList src="./assets/04.jpg" title="Literary Games" />
+      <EventsList src="./assets/05.jpg" title="Hiking" /> */}
+    </div>
     </div>
   );
 }

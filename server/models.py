@@ -6,6 +6,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from datetime import datetime
 db = SQLAlchemy()
 
+# members_events join table.
 members_events = db.Table(
     'members_events',
     db.Column('member_id', db.Integer, db.ForeignKey(
@@ -15,7 +16,7 @@ members_events = db.Table(
         'events.id', primary_key=True)
         )
 )
-
+# Member model
 class Member(db.Model):
     __tablename__ = "members"
 
@@ -25,14 +26,19 @@ class Member(db.Model):
     password = db.Column(db.String, nullable=False)
 
     # Relationship mapping Member(s) and Event(s)
-    events = db.relationship('Event', secondary=members_events, back_populates='members')
-    
-    reviews = db.relationship('Review', back_populates="member")
+    events = db.relationship(
+        'Event', secondary=members_events, back_populates='members'
+    )
+    reviews = db.relationship('Review', back_populates='members', cascade='all, delete-orphan')
+    books = association_proxy('reviews', 'book',
+                              creator= lambda book_obj: Review(book=book_obj))
 
+# Event model
 class Event(db.Model):
     __tablename__ = "events"
 
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     location = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=False)
@@ -42,34 +48,27 @@ class Event(db.Model):
         'Member', secondary=members_events, back_populates='events'
     )
 
-members_books = db.Table(
-    'members_books',
-    db.Column('member_id', db.Integer, db.ForeignKey(
-        'members.id'), primary_key=True
-        ),
-    db.Column('book_id', db.Integer, db.ForeignKey(
-        'books.id', primary_key=True)
-        )
-)
-
 class Book(db.Model, SerializerMixin):
     __tablename__ = "books"
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
     author = db.Column(db.String)
-    publisher_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    description = db.Column(db.text)
+    published_date = db.Column(db.DateTime)
 
-    b_events = db.relationship("review", secondary=members_books, back_populates='books')
+    reviews = db.relationship('Review', back_populates='book', cascade='all, delete-orphan')
+    members = association_proxy('reviews', 'member',
+                                creator= lambda member_obj: Review(member=member_obj))
 
 class Review(db.Model, SerializerMixin):
     __tablename__ = "review"
 
     id = db.Column(db.Integer, primary_key=True)
-    member_id = db.Column('member_id', db.Integer, db.ForeignKey('members.id', primary_key=True) )
-    book_id= db.Column('book_id', db.Integer , db.ForeignKey('books.id', primary_key=True) )
-    rating = db.Column(db.Integer)
     review = db.Column(db.String)
+    rating = db.Column(db.Integer)
 
-    member = db.relationship('Member', back_populates="reviews")
+    member_id = db.Column(db.Integer, db.ForeignKey('members.id'))
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
+
+    member = db.relationship('Member', back_populates='reviews')
+    book = db.relationship('Book', back_populates='reviews')
