@@ -29,7 +29,7 @@ class Member(db.Model):
     events = db.relationship(
         'Event', secondary=members_events, back_populates='members'
     )
-    reviews = db.relationship('Review', back_populates='members')
+    reviews = db.relationship('Review', back_populates='members', cascade='all, delete-orphan')
     books = association_proxy('reviews', 'book',
                               creator= lambda book_obj: Review(book=book_obj))
 
@@ -38,6 +38,7 @@ class Event(db.Model):
     __tablename__ = "events"
 
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     location = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=False)
@@ -53,10 +54,9 @@ class Book(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
     author = db.Column(db.String)
-    publisher_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    description = db.Column(db.text)
+    published_date = db.Column(db.DateTime)
 
-    reviews = db.relationship('Review', back_populates='book')
+    reviews = db.relationship('Review', back_populates='book', cascade='all, delete-orphan')
     members = association_proxy('reviews', 'member',
                                 creator= lambda member_obj: Review(member=member_obj))
 
