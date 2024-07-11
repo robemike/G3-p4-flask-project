@@ -4,17 +4,15 @@ from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+
 db = SQLAlchemy()
 
 # members_events join table.
 members_events = db.Table(
     'members_events',
-    db.Column('member_id', db.Integer, db.ForeignKey(
-        'members.id'), primary_key=True
-        ),
-    db.Column('event_id', db.Integer, db.ForeignKey(
-        'events.id', primary_key=True)
-        )
+    db.Column('member_id', db.Integer, db.ForeignKey('members.id')),  # Remove 'primary_key=True'
+    db.Column('event_id', db.Integer, db.ForeignKey('events.id')),  # Remove 'primary_key=True'
 )
 
 # Member model
@@ -30,6 +28,12 @@ class Member(db.Model):
     events = db.relationship(
         'Event', secondary=members_events, back_populates='members'
     )
+
+    def generate_password_hash(self, password):
+        self.password = generate_password_hash(password).decode('utf-8')
+
+    
+    
 
 # Event model
 class Event(db.Model):
