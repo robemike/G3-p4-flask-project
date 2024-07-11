@@ -34,12 +34,12 @@ class Member(db.Model):
                               creator= lambda book_obj: Review(book=book_obj))
 
 # Event model
-class Event(db.Model):
+class Event(db.Model, SerializerMixin):
     __tablename__ = "events"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.String, nullable=False)
     location = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=False)
 

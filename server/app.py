@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_restful import Resource, Api
 from flask_migrate import Migrate
 from flask_jwt_extended import jwt_required, create_access_token, create_refresh_token, JWTManager
@@ -54,8 +54,30 @@ class Login(Resource):
         else:
             return jsonify({"message": "Invalid login credentials."})
 
+class Events(Resource):
+    
+    def post(self):
+        name = request.form.get('name')
+        date = request.form.get('date')
+        location = request.form.get('location')
+        description = request.form.get('description')
+
+        existing_event = Event.query.filter(Event.name == name).first()
+        if existing_event:
+            return {"message": "Event already exists."}, 400
+        else:
+            new_event = Event(name=name, date=date, location=location, description=description)
+            db.session.add(new_event)
+            db.session.commit()
+            return {"message": "Event created successfully."}, 201
+        
+    def get(self):
+        events = [event.to_dict() for event in Event.query.all()]
+        return make_response(jsonify(events), 200)        
+
 api.add_resource(SignUp, '/signup')
 api.add_resource(Login, '/login')
+api.add_resource(Events, '/event')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

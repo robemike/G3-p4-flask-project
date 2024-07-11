@@ -1,18 +1,18 @@
 import './App.css';
+import EventsList from './components/EventsList';
 import Login from './components/Login';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // import EventsList from './components/EventsList';
 
 function App() {
   return (
     <div className="App">
-      <div className="container">
-        <Login />
-      {/* <EventsList src="./assets/01.webp" title="Writing Workshop" />
-      <EventsList src="./assets/02.jpg" title="Spelling Bee" />
-      <EventsList src="./assets/03.jpg" title="Fundraising Activity" />
-      <EventsList src="./assets/04.jpg" title="Literary Games" />
-      <EventsList src="./assets/05.jpg" title="Hiking" /> */}
-    </div>
+      <Router>
+        <Routes>
+          <Route path='/' element={<Login />} />
+          <Route path='/dashboard' element={<EventsList />} />
+        </Routes>
+      </Router>
     </div>
   );
 }
