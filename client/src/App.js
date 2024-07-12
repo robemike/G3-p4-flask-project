@@ -7,7 +7,6 @@ import Footer from './Components/Footer';
 import FormData from './Pages/Form';
 import BookInfo from './Pages/BookInfo';
 import Events from './Pages/Events';
-import axios from 'axios';
 import './App.css';
 
 const App = () => {
@@ -15,8 +14,12 @@ const App = () => {
 
   const fetchBooks = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:5000/books");
-      setBooks(response.data);
+      const response = await fetch("https://project2-db.onrender.com/books");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setBooks(data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -25,16 +28,19 @@ const App = () => {
   const handlePost = async (data) => {
     if (Object.keys(data).length > 0) {
       try {
-        const response = await axios.post("http://127.0.0.1:5000/books", data, {
+        const response = await fetch("https://project2-db.onrender.com/books", {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify(data),
         });
 
-        if (response.status !== 201) {
+        if (!response.ok) {
           throw new Error('Failed to add book');
         }
 
+        await response.json();
         fetchBooks();
       } catch (error) {
         console.error("Error adding book:", error);
@@ -53,13 +59,17 @@ const App = () => {
         price: bookDetails.price,
       };
 
-      await axios.post("http://localhost:5000/books", bookData, {
+      await fetch(`https://project2-db.onrender.com/MyShelf`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify(bookData),
       });
 
-      await axios.delete(`http://localhost:5000/books`);
+      await fetch(`https://project2-db.onrender.com/books/${bookId}`, {
+        method: 'DELETE',
+      });
 
       alert('You have added the book to your shelf');
       fetchBooks();
