@@ -14,7 +14,7 @@ members_events = db.Table(
     db.Column('member_id', db.Integer, db.ForeignKey('members.id')),  # Remove 'primary_key=True'
     db.Column('event_id', db.Integer, db.ForeignKey('events.id')),  # Remove 'primary_key=True'
 )
-# Member model
+# Member gmodel
 class Member(db.Model):
     __tablename__ = "members"
 
