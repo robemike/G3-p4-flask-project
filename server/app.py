@@ -6,8 +6,9 @@ from flask_cors import CORS
 from datetime import timedelta
 import random
 from flask_jwt_extended import JWTManager
-from events import events_bp
+from events import events_bp, admin_bp
 from auth import auth_bp
+from books import books_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -20,6 +21,8 @@ app.json.compact = False
 
 app.register_blueprint(events_bp)
 app.register_blueprint(auth_bp)
+app.register_blueprint(admin_bp)
+app.register_blueprint(books_bp)
 
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
