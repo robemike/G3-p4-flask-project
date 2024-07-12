@@ -17,7 +17,7 @@ members_events = db.Table(
         )
 )
 # Member model
-class Member(db.Model):
+class Member(db.Model, SerializerMixin):
     __tablename__ = "members"
 
     id = db.Column(db.Integer, primary_key=True)
