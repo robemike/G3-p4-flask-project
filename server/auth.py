@@ -40,23 +40,5 @@ class Login(Resource):
         else:
             return jsonify({"message": "Invalid login credentials."})
 
-# Log out
-# BLACKLIST = set()
-# @jwt.token_in_blacklist_loader
-# def check_if_token_in_blacklist(token):
-#     jti = token['jti']
-#     return jti in BLACKLIST
-
-# @app.route("/logout", methods=["POST"])
-# @jwt_required()
-# def logout():
-#     jti = get_jwt()["jti"]
-#     BLACKLIST.add(jti)
-#     return jsonify({"success":"Successfully logged out"}), 200
-
-# @jwt.expired_token_loader
-# def expired_token_callback():
-#     return jsonify({"message": "The token has expired."}), 401
-
 auth_api.add_resource(SignUp, '/signup')
 auth_api.add_resource(Login, '/login')
