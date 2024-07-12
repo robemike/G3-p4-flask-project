@@ -25,21 +25,21 @@ class Member(db.Model):
     email = db.Column(db.String, nullable=False)
     password = db.Column(db.String, nullable=False)
 
-    # Relationship mapping Member(s) and Event(s)
+    # Relationship mapping Member(s) and Event(s).
     events = db.relationship(
         'Event', secondary=members_events, back_populates='members'
     )
-    reviews = db.relationship('Review', back_populates='members', cascade='all, delete-orphan')
+    reviews = db.relationship('Review', back_populates='member', cascade='all, delete-orphan')
     books = association_proxy('reviews', 'book',
                               creator= lambda book_obj: Review(book=book_obj))
 
 # Event model
-class Event(db.Model):
+class Event(db.Model, SerializerMixin):
     __tablename__ = "events"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.String, nullable=False)
     location = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=False)
 
@@ -61,7 +61,7 @@ class Book(db.Model, SerializerMixin):
                                 creator= lambda member_obj: Review(member=member_obj))
 
 class Review(db.Model, SerializerMixin):
-    __tablename__ = "review"
+    __tablename__ = "reviews"
 
     id = db.Column(db.Integer, primary_key=True)
     review = db.Column(db.String)
