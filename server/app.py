@@ -1,70 +1,37 @@
-from flask import Flask, request, jsonify
-from flask_restful import Resource, Api
+
+from flask import Flask 
 from flask_migrate import Migrate
-from flask_jwt_extended import jwt_required, create_access_token, create_refresh_token
-from datetime import timedelta
-from models import Member, Book, Review, Event, db
-from flask_cors import CORS
 from flask_bcrypt import Bcrypt
+from models import db
+from flask_cors import CORS
+from datetime import timedelta
 import random
+from flask_jwt_extended import JWTManager
+from events import events_bp, admin_bp
+from auth import auth_bp
+from books import books_bp
 
 app = Flask(__name__)
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bookclub.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = ""
+app.config['JWT_SECRET_KEY'] = "fsbdgfnhgvjnvhmvh"+str(random.randint(1,1000000000000))
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
+app.config["SECRET_KEY"] = "JKSRVHJVFBSRDFV"+str(random.randint(1,1000000000000))
 app.json.compact = False
 
+app.register_blueprint(events_bp)
+app.register_blueprint(auth_bp)
+app.register_blueprint(admin_bp)
+app.register_blueprint(books_bp)
+
 bcrypt = Bcrypt(app)
+jwt = JWTManager(app)
 
 migrate = Migrate(app, db)
 db.init_app(app)
-api = Api(app)
-
-class SignUp(Resource):
-    def post(self):
-        data = request.form  
-        existing_member = Member.query.filter_by(email=data['email']).first()
-        if existing_member:
-            return jsonify({"message": "Email address already exists, log in."}), 400
-        hashed_password = bcrypt.generate_password_hash(data['password']).decode("utf-8")
-        new_member = Member(username=data['username'], email=data['email'], password=hashed_password)
-        db.session.add(new_member)
-        db.session.commit()
-        return jsonify({"message": "Signup successful."}), 201  # Or any appropriate success status
-
-api.add_resource(SignUp, '/signup')
-
-# class SignUp(Resource):
-#     def post(self):
-#         data = request.get_json()
-#         existing_member = Member.query.filter_by(email=data['email']).first()
-#         if existing_member:
-#             return jsonify({"message": "Email address already exists, log in."}), 400
-#         hashed_password = bcrypt.generate_password_hash(data['password']).decode("utf-8")
-#         new_member = Member(username=data['username'], email=data['email'], password=hashed_password)
-#         db.session.add(new_member)
-#         db.session.commit()
-
-# api.add_resource(SignUp, '/signup')
-
-        
-
-class Login(Resource):
-    def post(self):
-        email = request.json.get("email", None)
-        password = request.json.get("password", None)
-
-        member = Member.query.filter(Member.email == email).first()
-
-        if member and bcrypt.check_password_hash(member.password, password):
-            access_token = create_access_token(identity=member.id)
-            return jsonify({"access_token":access_token})
-        else:
-            return jsonify({"message": "Invalid login credentials."})
-
-api.add_resource(Login, '/login')
+bcrypt.init_app(app)
+jwt.init_app(app)
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(port=5555, debug=True)
