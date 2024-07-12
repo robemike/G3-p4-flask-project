@@ -49,6 +49,6 @@ class AdminUpdateDelete(Resource):
         else:
             return {"message": "Event not found."}, 404
 
-admin_api.add_resource(AdminPost, '/events')
-admin_api.add_resource(AdminUpdateDelete, '/events/<int:id>')   
+admin_api.add_resource(AdminPost, '/')
+admin_api.add_resource(AdminUpdateDelete, '/<int:id>')   
 events_api.add_resource(Events, '/')

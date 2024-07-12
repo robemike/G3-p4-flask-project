@@ -46,5 +46,5 @@ class BookById(Resource):
         db.session.commit()
         return {"message": "Book deleted successfully."}, 200
     
-books_api.add_resource(BookById, '/books/<int:id>')
-books_api.add_resource(Books, '/books')
+books_api.add_resource(BookById, '/<int:id>')
+books_api.add_resource(Books, '/')
