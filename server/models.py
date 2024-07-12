@@ -58,7 +58,7 @@ class Book(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
     author = db.Column(db.String)
-    publication_year = db.Column(db.DateTime)
+    publication_year = db.Column(db.String)
 
     reviews = db.relationship('Review', back_populates='book', cascade='all, delete-orphan')
     members = association_proxy('reviews', 'member',
