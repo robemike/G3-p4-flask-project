@@ -15,7 +15,7 @@ members_events = db.Table(
     db.Column('event_id', db.Integer, db.ForeignKey('events.id')),  # Remove 'primary_key=True'
 )
 # Member model
-class Member(db.Model):
+class Member(db.Model, SerializerMixin):
     __tablename__ = "members"
 
     id = db.Column(db.Integer, primary_key=True)
