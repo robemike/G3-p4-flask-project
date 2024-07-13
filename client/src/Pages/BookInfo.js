@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
 import './BookInfo.css';
 
 function BookInfo({ getBooks, handleBuyNow }) {
@@ -11,8 +10,12 @@ function BookInfo({ getBooks, handleBuyNow }) {
   useEffect(() => {
     const fetchBookById = async () => {
       try {
-        const response = await axios.get(`https://project2-db.onrender.com/books/${id}`);
-        setBook(response.data);
+        const response = await fetch(`https://project2-db.onrender.com/books/${id}`);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        setBook(data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -23,7 +26,13 @@ function BookInfo({ getBooks, handleBuyNow }) {
 
   const handleDelete = async (id) => {
     try {
-      const deleteResponse = await axios.delete(`https://project2-db.onrender.com/books/${id}`);
+      const deleteResponse = await fetch(`https://project2-db.onrender.com/books/${id}`, {
+        method: 'DELETE',
+      });
+      if (!deleteResponse.ok) {
+        throw new Error("Failed to delete book from backend");
+      }
+
       alert("Book deleted successfully!");
       navigate("/");
       getBooks();

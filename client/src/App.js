@@ -9,12 +9,13 @@ import BookInfo from './Pages/BookInfo';
 import Events from './Pages/Events';
 import './App.css';
 
+//Display books on the home page
 const App = () => {
   const [books, setBooks] = useState([]);
 
   const fetchBooks = async () => {
     try {
-      const response = await fetch("https://project2-db.onrender.com/books");
+      const response = await fetch("http://localhost:5000/books");
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -24,11 +25,11 @@ const App = () => {
       console.error("Error fetching data:", error);
     }
   };
-
+//posts book on the home page array
   const handlePost = async (data) => {
     if (Object.keys(data).length > 0) {
       try {
-        const response = await fetch("https://project2-db.onrender.com/books", {
+        const response = await fetch("http://localhost:5000/books", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -47,7 +48,7 @@ const App = () => {
       }
     }
   };
-
+//posts books within the MyBooks section
   const handleBuy = async (bookId, bookDetails) => {
     try {
       const bookData = {
@@ -59,7 +60,7 @@ const App = () => {
         price: bookDetails.price,
       };
 
-      await fetch(`https://project2-db.onrender.com/MyShelf`, {
+      await fetch(`http://localhost:5000/MyShelf`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +68,7 @@ const App = () => {
         body: JSON.stringify(bookData),
       });
 
-      await fetch(`https://project2-db.onrender.com/books/${bookId}`, {
+      await fetch(`http://localhost:5000/books/${bookId}`, {
         method: 'DELETE',
       });
 

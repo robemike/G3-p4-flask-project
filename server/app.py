@@ -1,37 +1,128 @@
-
-from flask import Flask 
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_bcrypt import Bcrypt
-from models import db
 from flask_cors import CORS
-from datetime import timedelta
-import random
-from flask_jwt_extended import JWTManager
-from events import events_bp, admin_bp
-from auth import auth_bp
-from books import books_bp
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bookclub.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///books.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = "fsbdgfnhgvjnvhmvh"+str(random.randint(1,1000000000000))
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
-app.config["SECRET_KEY"] = "JKSRVHJVFBSRDFV"+str(random.randint(1,1000000000000))
-app.json.compact = False
 
-app.register_blueprint(events_bp)
-app.register_blueprint(auth_bp)
-app.register_blueprint(admin_bp)
-app.register_blueprint(books_bp)
-
-bcrypt = Bcrypt(app)
-jwt = JWTManager(app)
-
+db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-db.init_app(app)
-bcrypt.init_app(app)
-jwt.init_app(app)
+
+from models import Book, MyShelf, Event  # Import Event model
+
+# Book routes
+@app.route('/books', methods=['POST'])
+def add_book():
+    data = request.get_json()
+    new_book = Book(
+        picture=data['picture'],
+        title=data['title'],
+        category=data['category'],
+        description=data['description'],
+        price=data['price']
+    )
+    db.session.add(new_book)
+    db.session.commit()
+    return jsonify({"message": "Book successfully added"}), 201
+
+@app.route('/books', methods=['GET'])
+def get_books():
+    books = Book.query.all()
+    books_list = [
+        {
+            "id": book.id,
+            "picture": book.picture,
+            "title": book.title,
+            "category": book.category,
+            "description": book.description,
+            "price": book.price
+        }
+        for book in books
+    ]
+    return jsonify(books_list), 200
+
+@app.route('/books/<int:id>', methods=['DELETE'])
+def delete_book(id):
+    book = Book.query.get_or_404(id)
+    db.session.delete(book)
+    db.session.commit()
+    return jsonify({"message": "Book successfully deleted"}), 204
+
+# MyShelf routes
+@app.route('/MyShelf', methods=['POST'])
+def add_to_my_shelf():
+    data = request.get_json()
+    new_shelf_book = MyShelf(
+        picture=data['picture'],
+        title=data['title'],
+        category=data['category'],
+        description=data['description'],
+        price=data['price']
+    )
+    db.session.add(new_shelf_book)
+    db.session.commit()
+    return jsonify({"message": "Book successfully added to shelf"}), 201
+
+@app.route('/MyShelf', methods=['GET'])
+def get_my_shelf():
+    my_shelf = MyShelf.query.all()
+    my_shelf_list = [
+        {
+            "id": book.id,
+            "picture": book.picture,
+            "title": book.title,
+            "category": book.category,
+            "description": book.description,
+            "price": book.price
+        }
+        for book in my_shelf
+    ]
+    return jsonify(my_shelf_list), 200
+
+@app.route('/MyShelf/<int:id>', methods=['DELETE'])
+def delete_from_my_shelf(id):
+    shelf_book = MyShelf.query.get_or_404(id)
+    db.session.delete(shelf_book)
+    db.session.commit()
+    return jsonify({"message": "Book successfully deleted from shelf"}), 204
+
+# Event routes
+@app.route('/events', methods=['POST'])
+def add_event():
+    data = request.get_json()
+    new_event = Event(
+        name=data['name'],
+        location=data['location'],
+        date=data['date']
+    )
+    db.session.add(new_event)
+    db.session.commit()
+    return jsonify({"message": "Event successfully added"}), 201
+
+@app.route('/events', methods=['GET'])
+def get_events():
+    events = Event.query.all()
+    events_list = [
+        {
+            "id": event.id,
+            "name": event.name,
+            "location": event.location,
+            "date": event.date
+        }
+        for event in events
+    ]
+    return jsonify(events_list), 200
+
+@app.route('/events/<int:id>', methods=['DELETE'])
+def delete_event(id):
+    event = Event.query.get_or_404(id)
+    db.session.delete(event)
+    db.session.commit()
+    return jsonify({"message": "Event successfully deleted"}), 204
 
 if __name__ == '__main__':
-    app.run(port=5555, debug=True)
+    app.run(port=5000, debug=True)

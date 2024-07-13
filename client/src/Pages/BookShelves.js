@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 
 function BookShelves() {
   const [shelves, setShelves] = useState([]);
 
   const fetchShelves = async () => {
     try {
-      const response = await axios.get("https://project2-db.onrender.com/MyShelf");
-      setShelves(response.data);
+      const response = await fetch("http://localhost:5000/MyShelf");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setShelves(data);
     } catch (error) {
       console.error("Error fetching shelves:", error);
     }
@@ -19,7 +22,13 @@ function BookShelves() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`https://project2-db.onrender.com/MyShelf/${id}`);
+      const deleteResponse = await fetch(`http://localhost:5000/MyShelf/${id}`, {
+        method: 'DELETE',
+      });
+      if (!deleteResponse.ok) {
+        throw new Error("Failed to delete shelf item from backend");
+      }
+
       alert("Book deleted successfully!");
       fetchShelves();
     } catch (error) {
@@ -30,6 +39,7 @@ function BookShelves() {
   return (
     <div className='homepage-container'>
       <h2>Personal Books</h2>
+
       <div className="column-grid">
         {shelves.map((shelf) => (
           <div className="book-div" key={shelf.id}>
