@@ -3,11 +3,12 @@ import './App.css';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import HomePage from './Pages/HomePage';
 import BookShelves from './Pages/BookShelves';
-import Navbar from './Components/Navbar';
-import Footer from './Components/Footer';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import FormData from './Pages/Form';
 import BookInfo from './Pages/BookInfo';
-import Login from './Components/Login';
+import Login from './components/Login';
+// import Events from './components/Events';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -26,7 +27,7 @@ function App() {
 
   const handlePost = async (data) => {
     if (Object.keys(data).length > 0) {
-      fetch("https://project2-db.onrender.com/books", {
+      fetch("http://127.0.0.1:5555/books", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -40,7 +41,7 @@ function App() {
           return res.json();
         })
         .then((data) => {
-          getBooks();
+          getBooks(data);
         })
         .catch((error) => {
           console.error("Error adding book:", error);
@@ -50,7 +51,7 @@ function App() {
 
   const getBooks = async () => {
     try {
-      const response = await fetch("https://project2-db.onrender.com/books");
+      const response = await fetch("http://127.0.0.1:5555/books");
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -85,7 +86,7 @@ function App() {
         body: JSON.stringify(bookData),
       });
 
-      await fetch(`https://project2-db.onrender.com/books/${bookId}`, { method: 'DELETE' });
+      await fetch(`http://127.0.0.1:5555/books/${bookId}`, { method: 'DELETE' });
 
       alert('You have Added The Book To Your Shelf');
       getBooks();
@@ -104,6 +105,7 @@ function App() {
           <Route path="/form" element={<PrivateRoute element={() => <FormData handlePost={handlePost} />} />} />
           <Route path="/MyShelves" element={<PrivateRoute element={BookShelves} />} />
           <Route path="/bookinfo/:id" element={<PrivateRoute element={(props) => <BookInfo handleBuyNow={handleBuy} getBooks={getBooks} {...props} />} />} />
+          {/* <Route path='/events' element={<Events/>}/> */}
         </Routes>
         {isLoggedIn && <Footer />}
       </BrowserRouter>

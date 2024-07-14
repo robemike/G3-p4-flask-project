@@ -18,6 +18,7 @@ admin_api = Api(admin_bp)
 class AdminPost(Resource):
     def post(self):
         name = request.form.get('name')
+        image = request.form.get('image')
         date = request.form.get('date')
         location = request.form.get('location')
         description = request.form.get('description')
@@ -26,7 +27,7 @@ class AdminPost(Resource):
         if existing_event:
             return {"message": "Event already exists."}, 400
         else:
-            new_event = Event(name=name, date=date, location=location, description=description)
+            new_event = Event(name=name, image=image, date=date, location=location, description=description)
             db.session.add(new_event)
             db.session.commit()
             return {"message": "Event created successfully."}, 201
@@ -49,6 +50,6 @@ class AdminUpdateDelete(Resource):
         else:
             return {"message": "Event not found."}, 404
 
-admin_api.add_resource(AdminPost, '/')
-admin_api.add_resource(AdminUpdateDelete, '/<int:id>')   
+admin_api.add_resource(AdminPost, '/events')
+admin_api.add_resource(AdminUpdateDelete, 'events/<int:id>')   
 events_api.add_resource(Events, '/')

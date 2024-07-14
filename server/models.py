@@ -43,6 +43,7 @@ class Event(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
+    image = db.Column(db.String, nullable=False)
     date = db.Column(db.String, nullable=False)
     location = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=False)
@@ -56,8 +57,9 @@ class Book(db.Model, SerializerMixin):
     __tablename__ = "books"
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String)
-    author = db.Column(db.String)
+    title = db.Column(db.String, nullable=False)
+    author = db.Column(db.String, nullable=False)
+    image = db.Column(db.String, nullable=False)
     publication_year = db.Column(db.String)
 
     reviews = db.relationship('Review', back_populates='book', cascade='all, delete-orphan')

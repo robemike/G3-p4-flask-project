@@ -38,7 +38,9 @@ class Login(Resource):
             access_token = create_access_token(identity=member_email.id)
             return jsonify({"access_token":access_token})
         else:
-            return jsonify({"message": "Invalid login credentials."})
+            return jsonify({"message": "Invalid login credentials."}), 401
+        
+
 
 auth_api.add_resource(SignUp, '/signup')
 auth_api.add_resource(Login, '/login')

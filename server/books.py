@@ -13,13 +13,14 @@ class Books(Resource):
     def post(self):
         title = request.form.get('title')
         author = request.form.get('author')
+        image = request.form.get('image')
         publication_year = request.form.get('publication_year')
 
         existing_book = Book.query.filter_by(title=title).first()
         if existing_book:
             return {"message": "Book already exists."}, 400
         else:
-            new_book = Book(title=title, author=author, publication_year=publication_year)
+            new_book = Book(title=title, author=author, image=image, publication_year=publication_year)
             db.session.add(new_book)
             db.session.commit()
             return {"message": "Book created successfully."}, 201

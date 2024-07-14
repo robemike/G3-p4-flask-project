@@ -11,6 +11,7 @@ function Navbar(){
 <Link className="nav-link" to="/">Home </Link>
   <Link className="nav-link" to="/MyShelves">Shelf</Link>
   <Link className="nav-link" to="/form">Add Book</Link>
+  {/* <Link className="nav-link" to="/events">View Events</Link> */}
 </nav>
   </div>
 );

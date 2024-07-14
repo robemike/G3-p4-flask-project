@@ -1,7 +1,7 @@
 import React, { useState ,useEffect} from 'react';
-import Header from '../Components/Header';
-import Filter from '../Components/Filter';
-import BookList from '../Components/BookList';
+import Header from '../components/Header';
+import Filter from '../components/Filter';
+import BookList from '../components/BookList';
 
 function HomePage({ books, handleBuy }) {
   const [filteredBooks, setFilteredBooks] = useState([]);
@@ -26,9 +26,10 @@ function HomePage({ books, handleBuy }) {
       <div className="homepage-container">
         <h2>Unlimited Books</h2>
         <div className="column-grid">
-          {filteredBooks.map((book) => (
+          {/* {filteredBooks.map((book) => (
             <BookList key={book.id} book={book} handleBuy={(bookId, bookDetails) => handleBuy(bookId, bookDetails)} />
-          ))}
+          ))} */}
+          <BookList />
         </div>
       </div>
     </div>
