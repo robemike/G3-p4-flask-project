@@ -1,70 +1,139 @@
 from flask import Flask, request, jsonify
-from flask_restful import Resource, Api
+from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_jwt_extended import jwt_required, create_access_token, create_refresh_token
-from datetime import timedelta
-from models import Member, Book, Review, Event, db
 from flask_cors import CORS
-from flask_bcrypt import Bcrypt
-import random
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bookclub.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///books.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = ""
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
-app.json.compact = False
 
-bcrypt = Bcrypt(app)
-
+db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-db.init_app(app)
-api = Api(app)
 
-class SignUp(Resource):
-    def post(self):
-        data = request.form  
-        existing_member = Member.query.filter_by(email=data['email']).first()
-        if existing_member:
-            return jsonify({"message": "Email address already exists, log in."}), 400
-        hashed_password = bcrypt.generate_password_hash(data['password']).decode("utf-8")
-        new_member = Member(username=data['username'], email=data['email'], password=hashed_password)
-        db.session.add(new_member)
-        db.session.commit()
-        return jsonify({"message": "Signup successful."}), 201  # Or any appropriate success status
+from models import Book, MyShelf, Event  # Import Event model
 
-api.add_resource(SignUp, '/signup')
+# Book routes
+@app.route('/books', methods=['POST'])
+def add_book():
+    data = request.get_json()
+    new_book = Book(
+        picture=data['picture'],
+        title=data['title'],
+        category=data['category'],
+        description=data['description'],
+        price=data['price']
+    )
+    db.session.add(new_book)
+    db.session.commit()
+    return jsonify({"message": "Book successfully added"}), 201
 
-# class SignUp(Resource):
-#     def post(self):
-#         data = request.get_json()
-#         existing_member = Member.query.filter_by(email=data['email']).first()
-#         if existing_member:
-#             return jsonify({"message": "Email address already exists, log in."}), 400
-#         hashed_password = bcrypt.generate_password_hash(data['password']).decode("utf-8")
-#         new_member = Member(username=data['username'], email=data['email'], password=hashed_password)
-#         db.session.add(new_member)
-#         db.session.commit()
+@app.route('/books', methods=['GET'])
+def get_books():
+    books = Book.query.all()
+    books_list = [
+        {
+            "id": book.id,
+            "picture": book.picture,
+            "title": book.title,
+            "category": book.category,
+            "description": book.description,
+            "price": book.price
+        }
+        for book in books
+    ]
+    return jsonify(books_list), 200
 
-# api.add_resource(SignUp, '/signup')
+@app.route('/books/<int:id>', methods=['DELETE'])
+def delete_book(id):
+    book = Book.query.get_or_404(id)
+    db.session.delete(book)
+    db.session.commit()
+    return jsonify({"message": "Book successfully deleted"}), 204
 
-        
+# MyShelf routes
+@app.route('/MyShelf', methods=['POST'])
+def add_to_my_shelf():
+    data = request.get_json()
+    new_shelf_book = MyShelf(
+        picture=data['picture'],
+        title=data['title'],
+        category=data['category'],
+        description=data['description'],
+        price=data['price']
+    )
+    db.session.add(new_shelf_book)
+    db.session.commit()
+    return jsonify({"message": "Book successfully added to shelf"}), 201
 
-class Login(Resource):
-    def post(self):
-        email = request.json.get("email", None)
-        password = request.json.get("password", None)
+@app.route('/MyShelf', methods=['GET'])
+def get_my_shelf():
+    my_shelf = MyShelf.query.all()
+    my_shelf_list = [
+        {
+            "id": book.id,
+            "picture": book.picture,
+            "title": book.title,
+            "category": book.category,
+            "description": book.description,
+            "price": book.price
+        }
+        for book in my_shelf
+    ]
+    return jsonify(my_shelf_list), 200
 
-        member = Member.query.filter(Member.email == email).first()
+@app.route('/MyShelf/<int:id>', methods=['DELETE'])
+def delete_from_my_shelf(id):
+    shelf_book = MyShelf.query.get_or_404(id)
+    db.session.delete(shelf_book)
+    db.session.commit()
+    return jsonify({"message": "Book successfully deleted from shelf"}), 204
 
-        if member and bcrypt.check_password_hash(member.password, password):
-            access_token = create_access_token(identity=member.id)
-            return jsonify({"access_token":access_token})
-        else:
-            return jsonify({"message": "Invalid login credentials."})
+# Event routes
+@app.route('/events', methods=['POST'])
+def add_event():
+    data = request.get_json()
+    
+    # Extract book_id from data
+    book_id = data.get('book_id')  # Assuming the frontend sends book_id along with event data
+    
+    # Check if the book exists
+    book = Book.query.get(book_id)
+    if not book:
+        return jsonify({"message": f"Book with id {book_id} does not exist"}), 404
+    
+    new_event = Event(
+        name=data['name'],
+        location=data['location'],
+        date=data['date'],
+        book_id=book_id  # Assign the book_id to the event
+    )
+    db.session.add(new_event)
+    db.session.commit()
+    return jsonify({"message": "Event successfully added"}), 201
 
-api.add_resource(Login, '/login')
+@app.route('/events', methods=['GET'])
+def get_events():
+    events = Event.query.all()
+    events_list = [
+        {
+            "id": event.id,
+            "name": event.name,
+            "location": event.location,
+            "date": event.date,
+            "book_id": event.book_id  # Include book_id in the response
+        }
+        for event in events
+    ]
+    return jsonify(events_list), 200
+
+@app.route('/events/<int:id>', methods=['DELETE'])
+def delete_event(id):
+    event = Event.query.get_or_404(id)
+    db.session.delete(event)
+    db.session.commit()
+    return jsonify({"message": "Event successfully deleted"}), 204
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
