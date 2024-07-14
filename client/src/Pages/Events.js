@@ -1,17 +1,19 @@
-// Events.js
 import React, { useState, useEffect } from 'react';
 import './Events.css';
 
 const Events = () => {
   const [events, setEvents] = useState([]);
+  const [books, setBooks] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
     location: '',
-    date: ''
+    date: '',
+    book_id: ''
   });
 
   useEffect(() => {
     fetchEvents();
+    fetchBooks();
   }, []);
 
   const fetchEvents = async () => {
@@ -24,6 +26,19 @@ const Events = () => {
       setEvents(data);
     } catch (error) {
       console.error("Error fetching events:", error);
+    }
+  };
+
+  const fetchBooks = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/books");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setBooks(data);
+    } catch (error) {
+      console.error("Error fetching books:", error);
     }
   };
 
@@ -42,7 +57,7 @@ const Events = () => {
       }
 
       await response.json();
-      fetchEvents();
+      fetchEvents(); // Refresh events after adding
     } catch (error) {
       console.error("Error adding event:", error);
     }
@@ -58,7 +73,7 @@ const Events = () => {
         throw new Error('Failed to delete event');
       }
 
-      fetchEvents();
+      fetchEvents(); // Refresh events after deletion
     } catch (error) {
       console.error("Error deleting event:", error);
     }
@@ -75,7 +90,7 @@ const Events = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     handleAddEvent(formData);
-    setFormData({ name: '', location: '', date: '' });
+    setFormData({ name: '', location: '', date: '', book_id: '' });
   };
 
   return (
@@ -96,6 +111,15 @@ const Events = () => {
               <label htmlFor="date">Date:</label>
               <input type="date" id="date" value={formData.date} onChange={handleChange} required />
             </div>
+            <div>
+              <label htmlFor="book_id">Book:</label>
+              <select id="book_id" value={formData.book_id} onChange={handleChange} required>
+                <option value="">Select a book</option>
+                {books.map((book) => (
+                  <option key={book.id} value={book.id}>{book.title}</option>
+                ))}
+              </select>
+            </div>
             <button type="submit">Add Event</button>
           </form>
         </div>
@@ -106,6 +130,7 @@ const Events = () => {
           {events.map((event) => (
             <li key={event.id}>
               <strong>{event.name}</strong> - {event.location} ({event.date}){' '}
+              <em>Book: {event.book_id}</em>{' '}<br></br>
               <button className="delete-button" onClick={() => handleDelete(event.id)}>Delete</button>
             </li>
           ))}

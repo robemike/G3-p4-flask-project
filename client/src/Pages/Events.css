@@ -39,6 +39,17 @@
     font-size: 14px;
 }
 
+.div-container select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #cdbebe;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #ffffff; /* Background color */
+    color: #333333; /* Text color */
+}
+
 .div-container button {
     background-color: #4caf50;
     color: white;
@@ -80,4 +91,3 @@
 .events-list li strong {
     font-weight: bold;
 }
-

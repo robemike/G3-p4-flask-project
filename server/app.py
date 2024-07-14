@@ -94,10 +94,20 @@ def delete_from_my_shelf(id):
 @app.route('/events', methods=['POST'])
 def add_event():
     data = request.get_json()
+    
+    # Extract book_id from data
+    book_id = data.get('book_id')  # Assuming the frontend sends book_id along with event data
+    
+    # Check if the book exists
+    book = Book.query.get(book_id)
+    if not book:
+        return jsonify({"message": f"Book with id {book_id} does not exist"}), 404
+    
     new_event = Event(
         name=data['name'],
         location=data['location'],
-        date=data['date']
+        date=data['date'],
+        book_id=book_id  # Assign the book_id to the event
     )
     db.session.add(new_event)
     db.session.commit()
@@ -111,7 +121,8 @@ def get_events():
             "id": event.id,
             "name": event.name,
             "location": event.location,
-            "date": event.date
+            "date": event.date,
+            "book_id": event.book_id  # Include book_id in the response
         }
         for event in events
     ]
