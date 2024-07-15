@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import './BookShelves.css'; 
 
 function BookShelves() {
   const [shelves, setShelves] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const fetchShelves = async () => {
     try {
@@ -36,12 +38,26 @@ function BookShelves() {
     }
   };
 
+  const handleSearch = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const filteredShelves = shelves.filter(shelf => 
+    shelf.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className='homepage-container'>
       <h2>Personal Books</h2>
-
+      <input 
+        type="text" 
+        placeholder="Search books..." 
+        value={searchQuery} 
+        onChange={handleSearch} 
+        className="search-bar"
+      />
       <div className="column-grid">
-        {shelves.map((shelf) => (
+        {filteredShelves.map((shelf) => (
           <div className="book-div" key={shelf.id}>
             <div className="image-container">
               <img className='image' alt="" src={shelf.picture} />
