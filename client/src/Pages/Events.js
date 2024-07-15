@@ -6,7 +6,7 @@ const Events = () => {
   const [books, setBooks] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
-    location: '',
+    location: 'Nairobi', // The default location
     date: '',
     book_id: ''
   });
@@ -57,7 +57,7 @@ const Events = () => {
       }
 
       await response.json();
-      fetchEvents(); // Refresh events after adding
+      fetchEvents(); // Refreshes events after adding
     } catch (error) {
       console.error("Error adding event:", error);
     }
@@ -90,7 +90,7 @@ const Events = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     handleAddEvent(formData);
-    setFormData({ name: '', location: '', date: '', book_id: '' });
+    setFormData({ name: '', location: 'Nairobi', date: '', book_id: '' });
   };
 
   return (
@@ -105,7 +105,12 @@ const Events = () => {
             </div>
             <div>
               <label htmlFor="location">Location:</label>
-              <input type="text" id="location" value={formData.location} onChange={handleChange} required />
+              <select id="location" value={formData.location} onChange={handleChange} required>
+                <option value="Nairobi">Nairobi</option>
+                <option value="Mombasa">Mombasa</option>
+                <option value="Machakos">Machakos</option>
+                <option value="Nakuru">Nakuru</option>
+              </select>
             </div>
             <div>
               <label htmlFor="date">Date:</label>
@@ -130,7 +135,8 @@ const Events = () => {
           {events.map((event) => (
             <li key={event.id}>
               <strong>{event.name}</strong> - {event.location} ({event.date}){' '}
-              <em>Book: {event.book_id}</em>{' '}<br></br>
+              <em>Book: {event.book_id}</em>{' '}
+              <br></br>
               <button className="delete-button" onClick={() => handleDelete(event.id)}>Delete</button>
             </li>
           ))}
