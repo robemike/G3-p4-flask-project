@@ -5,7 +5,6 @@ import BookShelves from './Pages/BookShelves';
 import Navbar from './Components/Navbar';
 import Footer from './Components/Footer';
 import FormData from './Pages/Form';
-// import BookInfo from './Pages/BookInfo';
 import Events from './Pages/Events';
 import './App.css';
 
@@ -91,7 +90,6 @@ const App = () => {
           <Route path="/" element={<HomePage books={books} handleBuy={handleBuy} />} />
           <Route path="/form" element={<FormData handlePost={handlePost} />} />
           <Route path="/MyShelves" element={<BookShelves />} />
-          {/* <Route path="/bookinfo/:id" element={<BookInfo handleBuyNow={handleBuy} />} /> */}
           <Route path="/events" element={<Events />} />
         </Routes>
         <Footer />
