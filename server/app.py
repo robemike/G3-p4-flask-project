@@ -96,7 +96,7 @@ def add_event():
     data = request.get_json()
     
     # Extract book_id from data
-    book_id = data.get('book_id')  # Assuming the frontend sends book_id along with event data
+    book_id = data.get('book_id')
     
     # Check if the book exists
     book = Book.query.get(book_id)
