@@ -15,7 +15,7 @@ By:
 This project aims at creating a user friendy Full Stack application that will help book clubs, specifically Harrison's in this case to be able to manage the members of the club, events that the members participate in and finally the books within the club.
 
 ### Live Link
-- [Live Link](https://read-finder.vercel.app/)
+- The site is live at [Live Link](https://harrisons-bookclub.vercel.app/)
 
 ### Employeed
 1. JavaScript (React) for the frontend.
