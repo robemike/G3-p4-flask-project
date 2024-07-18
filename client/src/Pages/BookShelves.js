@@ -7,7 +7,7 @@ function BookShelves() {
 
   const fetchShelves = async () => {
     try {
-      const response = await fetch("http://localhost:5000/MyShelf");
+      const response = await fetch("https://phase-4-project-backend-z4yx.onrender.com//api/myshelf");
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -24,7 +24,7 @@ function BookShelves() {
 
   const handleDelete = async (id) => {
     try {
-      const deleteResponse = await fetch(`http://localhost:5000/MyShelf/${id}`, {
+      const deleteResponse = await fetch(`https://phase-4-project-backend-z4yx.onrender.com//api/myshelf/${id}`, {
         method: 'DELETE',
       });
       if (!deleteResponse.ok) {

@@ -18,7 +18,7 @@ const Events = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await fetch("http://localhost:5000/events");
+      const response = await fetch("https://phase-4-project-backend-z4yx.onrender.com//api/events");
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -31,7 +31,7 @@ const Events = () => {
 
   const fetchBooks = async () => {
     try {
-      const response = await fetch("http://localhost:5000/books");
+      const response = await fetch("https://phase-4-project-backend-z4yx.onrender.com//api/books");
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -44,7 +44,7 @@ const Events = () => {
 
   const handleAddEvent = async (data) => {
     try {
-      const response = await fetch("http://localhost:5000/events", {
+      const response = await fetch("https://phase-4-project-backend-z4yx.onrender.com//api/events", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,7 +65,7 @@ const Events = () => {
 
   const handleDelete = async (eventId) => {
     try {
-      const response = await fetch(`http://localhost:5000/events/${eventId}`, {
+      const response = await fetch(`https://phase-4-project-backend-z4yx.onrender.com//api/events/${eventId}`, {
         method: 'DELETE',
       });
 

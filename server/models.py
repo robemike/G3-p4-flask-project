@@ -7,8 +7,6 @@ class Book(db.Model):
     category = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(255), nullable=False)
     price = db.Column(db.String(20), nullable=False)
-
-    # One-to-Many relationship with Event
     events = db.relationship('Event', backref='book', lazy=True)
 
     def as_dict(self):
@@ -36,8 +34,6 @@ class Event(db.Model):
     name = db.Column(db.String(100), nullable=False)
     location = db.Column(db.String(100), nullable=False)
     date = db.Column(db.String(20), nullable=False)
-
-    # Foreign Key relationship with Book
     book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
 
     def as_dict(self):
